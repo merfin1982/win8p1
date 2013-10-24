@@ -20,7 +20,7 @@
 :: ==============================================================::
 REM Version number
 if "%VERSION%" == "" (
-    set VERSION=1.0.0
+    set VERSION=0.1.0
 )
 REM Set color to Terminal
 COLOR 0A
