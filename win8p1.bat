@@ -20,7 +20,7 @@
 :: ==============================================================::
 REM Version number
 if "%VERSION%" == "" (
-    set VERSION=0.0.2-beta
+    set VERSION=1.0.0
 )
 REM Set color to Terminal
 COLOR 0A
@@ -161,6 +161,11 @@ IF %runbot% EQU 2 (
 	cscript //Nologo %DLOAD_SCRIPT% http://download.microsoft.com/download/0/C/6/0C67F34D-1F09-429D-B55E-794177982162/Windows8-RT-KB2871389-x86.msu %USERPROFILE%\Windows8-RT-KB2871389-x86.msu
 	GOTO:x86inst
 )
+IF %runbot% EQU 0 (
+	GOTO:mainmenu
+) ELSE (
+	(ECHO.) & (ECHO.) & (ECHO. Select [1] or [2] ONLY) & PAUSE & GOTO:dlfilesmenu
+)
 :: ==============================================================::
 :x64inst
 IF exist "%USERPROFILE%\Windows8-RT-KB2871389-x64.msu" (
@@ -225,15 +230,49 @@ GOTO:mainmenu
 cls
 ECHO.
 ECHO.
-ECHO.    Download Win8.1 ISO Maker       [1]
+ECHO.     Download Win8.1 ISO Maker       [1]
 ECHO.
-ECHO.    Returning to Main Menu...
-ping -n 3 127.0.0.1 >nul
-GOTO:mainmenu
-:: bitsadmin.exe /transfer "JobName" http://download.url/here.exe C:\destination\here.exe
-
-
-http://web.esd.microsoft.com/W81GA/81GF9D695DA9DF8D56B2BC5B7356B5DA9D89D29D69/WindowsSetupBox.exe
+ECHO.
+ECHO.     Return to menu                  [0]
+ECHO.
+set /p catman=Enter choice:
+IF %catman% EQU 1 (
+	bitsadmin.exe /transfer "dlIsoMaker" http://web.esd.microsoft.com/W81GA/81GF9D695DA9DF8D56B2BC5B7356B5DA9D89D29D69/WindowsSetupBox.exe %USERPROFILE%\WindowsSetupBox.exe
+	GOTO:isomake
+)
+IF %catman% EQU 0 (
+	GOTO:mainmenu
+) ELSE (
+	cls
+	ECHO.
+	ECHO. You didn't make an appropriate choice!
+	ping -n 3 127.0.0.1 >nul
+	GOTO:baiz
+)
+:: ==============================================================::
+:isomake
+IF exist "%USERPROFILE%\WindowsSetupBox.exe" (
+	%USERPROFILE%\WindowsSetupBox.exe
+	GOTO:readme
+) ELSE (
+	cls
+	ECHO.
+	ECHO.
+	ECHO. Download not finished, checking in 30 seconds...
+	ping -n 30 127.0.0.1 >nul
+	GOTO:isomake
+)
+:: ==============================================================::
+:readme
+cls
+ECHO.
+ECHO.
+ECHO.     This tool will only work if you have
+ECHO.     a Windows 8 or Windows 8.1 KEY to run
+ECHO.     the installation after it has downloaded...
+ECHO.
+ping -n 5 127.0.0.1 >nul
+GOTO:baiz
 :: ==============================================================::
 :baiz
 cls
@@ -241,5 +280,5 @@ ECHO.
 ECHO.
 ECHO.
 ECHO.            BYE!
-ping -n 3 127.0.0.1
+ping -n 2 127.0.0.1
 exit
