@@ -20,7 +20,7 @@
 :: ==============================================================::
 REM Version number
 if "%VERSION%" == "" (
-    set VERSION=0.0.1-beta
+    set VERSION=0.0.2-beta
 )
 REM Set color to Terminal
 COLOR 0A
@@ -62,11 +62,11 @@ IF %choice% EQU x (
 :: ==============================================================::
 :dlfilesmenu
 ECHO.
-ECHO.   *******************************************
-ECHO.   *          ! ! W A R N I N G ! !          *
-ECHO.   *******************************************
-ECHO.   *** THIS WILL AUTO-RESTART THE COMPUTER ***
-ECHO.   *******************************************
+ECHO.   ******************************************
+ECHO.   *          ! ! W A R N I N G ! !         *
+ECHO.   ******************************************
+ECHO.   *** THIS MAY AUTO-RESTART THE COMPUTER ***
+ECHO.   ******************************************
 ECHO.
 ECHO.
 ECHO.
@@ -80,58 +80,163 @@ ECHO.
 ECHO.     Return to menu          [0]
 ECHO.
 ECHO.
-ECHO.   *******************************************
-ECHO.   *          ! ! W A R N I N G ! !          *
-ECHO.   *******************************************
-ECHO.   *** THIS WILL AUTO-RESTART THE COMPUTER ***
-ECHO.   *******************************************
+ECHO.   ******************************************
+ECHO.   *          ! ! W A R N I N G ! !         *
+ECHO.   ******************************************
+ECHO.   *** THIS MAY AUTO-RESTART THE COMPUTER ***
+ECHO.   ******************************************
 ECHO.
 set /p runbot=Enter selection:
 IF %runbot% EQU 1 (
-	
+	rem Windows has no built-in wget or curl, so generate a VBS script to do it:
+	rem -------------------------------------------------------------------------
+	set DLOAD_SCRIPT=download.vbs
+	echo Option Explicit                                                    >  %DLOAD_SCRIPT%
+	echo Dim args, http, fileSystem, adoStream, url, target, status         >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo Set args = Wscript.Arguments                                       >> %DLOAD_SCRIPT%
+	echo Set http = CreateObject("WinHttp.WinHttpRequest.5.1")              >> %DLOAD_SCRIPT%
+	echo url = args(0)                                                      >> %DLOAD_SCRIPT%
+	echo target = args(1)                                                   >> %DLOAD_SCRIPT%
+	echo WScript.Echo "Getting '" ^& target ^& "' from '" ^& url ^& "'..."  >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo http.Open "GET", url, False                                        >> %DLOAD_SCRIPT%
+	echo http.Send                                                          >> %DLOAD_SCRIPT%
+	echo status = http.Status                                               >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo If status ^<^> 200 Then                                            >> %DLOAD_SCRIPT%
+	echo    WScript.Echo "FAILED to download: HTTP Status " ^& status       >> %DLOAD_SCRIPT%
+	echo    WScript.Quit 1                                                  >> %DLOAD_SCRIPT%
+	echo End If                                                             >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo Set adoStream = CreateObject("ADODB.Stream")                       >> %DLOAD_SCRIPT%
+	echo adoStream.Open                                                     >> %DLOAD_SCRIPT%
+	echo adoStream.Type = 1                                                 >> %DLOAD_SCRIPT%
+	echo adoStream.Write http.ResponseBody                                  >> %DLOAD_SCRIPT%
+	echo adoStream.Position = 0                                             >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo Set fileSystem = CreateObject("Scripting.FileSystemObject")        >> %DLOAD_SCRIPT%
+	echo If fileSystem.FileExists(target) Then fileSystem.DeleteFile target >> %DLOAD_SCRIPT%
+	echo adoStream.SaveToFile target                                        >> %DLOAD_SCRIPT%
+	echo adoStream.Close                                                    >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	rem -------------------------------------------------------------------------
+	cscript //Nologo %DLOAD_SCRIPT% http://download.microsoft.com/download/6/7/B/67BB1487-B67A-4B3C-BF49-140AB1CF7B5F/Windows8-RT-KB2871389-x64.msu %USERPROFILE%\Windows8-RT-KB2871389-x64.msu
+	GOTO:x64inst
 )
 IF %runbot% EQU 2 (
-	
+	rem Windows has no built-in wget or curl, so generate a VBS script to do it:
+	rem -------------------------------------------------------------------------
+	set DLOAD_SCRIPT=download.vbs
+	echo Option Explicit                                                    >  %DLOAD_SCRIPT%
+	echo Dim args, http, fileSystem, adoStream, url, target, status         >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo Set args = Wscript.Arguments                                       >> %DLOAD_SCRIPT%
+	echo Set http = CreateObject("WinHttp.WinHttpRequest.5.1")              >> %DLOAD_SCRIPT%
+	echo url = args(0)                                                      >> %DLOAD_SCRIPT%
+	echo target = args(1)                                                   >> %DLOAD_SCRIPT%
+	echo WScript.Echo "Getting '" ^& target ^& "' from '" ^& url ^& "'..."  >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo http.Open "GET", url, False                                        >> %DLOAD_SCRIPT%
+	echo http.Send                                                          >> %DLOAD_SCRIPT%
+	echo status = http.Status                                               >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo If status ^<^> 200 Then                                            >> %DLOAD_SCRIPT%
+	echo    WScript.Echo "FAILED to download: HTTP Status " ^& status       >> %DLOAD_SCRIPT%
+	echo    WScript.Quit 1                                                  >> %DLOAD_SCRIPT%
+	echo End If                                                             >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo Set adoStream = CreateObject("ADODB.Stream")                       >> %DLOAD_SCRIPT%
+	echo adoStream.Open                                                     >> %DLOAD_SCRIPT%
+	echo adoStream.Type = 1                                                 >> %DLOAD_SCRIPT%
+	echo adoStream.Write http.ResponseBody                                  >> %DLOAD_SCRIPT%
+	echo adoStream.Position = 0                                             >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	echo Set fileSystem = CreateObject("Scripting.FileSystemObject")        >> %DLOAD_SCRIPT%
+	echo If fileSystem.FileExists(target) Then fileSystem.DeleteFile target >> %DLOAD_SCRIPT%
+	echo adoStream.SaveToFile target                                        >> %DLOAD_SCRIPT%
+	echo adoStream.Close                                                    >> %DLOAD_SCRIPT%
+	echo.                                                                   >> %DLOAD_SCRIPT%
+	rem -------------------------------------------------------------------------
+	cscript //Nologo %DLOAD_SCRIPT% http://download.microsoft.com/download/0/C/6/0C67F34D-1F09-429D-B55E-794177982162/Windows8-RT-KB2871389-x86.msu %USERPROFILE%\Windows8-RT-KB2871389-x86.msu
+	GOTO:x86inst
 )
-IF %runbot& EQU 0 (
-	GOTO:mainmenu
+:: ==============================================================::
+:x64inst
+IF exist "%USERPROFILE%\Windows8-RT-KB2871389-x64.msu" (
+	wusa.exe %USERPROFILE%\Windows8-RT-KB2871389-x64.msu /quiet
+	goto:letuknow
 ) ELSE (
-	(ECHO.) & (ECHO.) & (ECHO. Select [1] or [2] ONLY) & PAUSE & GOTO:dlfilesmenu
+	cls
+	ECHO.
+	ECHO.
+	ECHO. Download not finished, checking in 30 seconds...
+	ping -n 30 127.0.0.1 >nul
+	GOTO:x64inst
 )
+:: ==============================================================::
+:x86inst
+IF exist "%USERPROFILE%\Windows8-RT-KB2871389-x86.msu" (
+	wusa.exe %USERPROFILE%\Windows8-RT-KB2871389-x86.msu /quiet
+	goto:letuknow
+) ELSE (
+	cls
+	ECHO.
+	ECHO.
+	ECHO. Download not finished, checking in 30 seconds...
+	ping -n 30 127.0.0.1 >nul
+	GOTO:x86inst
+)
+:: ==============================================================::
+:letuknow
+cls
+ECHO.
+ECHO.
+ECHO.    Your computer may restart automatically, if this does
+ECHO.    not happen automatically, it will go back to the main
+ECHO.    menu in approximately 1 min and you may proceed with
+ECHO.    download of Windows 8.1 ISO file or choose to use the
+ECHO.    Windows Store to complete the upgrade.
+ECHO.
+ping -n 2 127.0.0.1 >nul
+cls
+ECHO.
+ECHO.
+ECHO.    Your computer may restart automatically, if this does
+ECHO.    not happen automatically, it will go back to the main
+ECHO.    menu in approximately 1 min and you may proceed with
+ECHO.    download of Windows 8.1 ISO file or choose to use the
+ECHO.    Windows Store to complete the upgrade..
+ECHO.
+ping -n 2 127.0.0.1 >nul
+cls
+ECHO.
+ECHO.
+ECHO.    Your computer may restart automatically, if this does
+ECHO.    not happen automatically, it will go back to the main
+ECHO.    menu in approximately 1 min and you may proceed with
+ECHO.    download of Windows 8.1 ISO file or choose to use the
+ECHO.    Windows Store to complete the upgrade...
+ECHO.
+ping -n 60 127.0.0.1 >nul
+GOTO:mainmenu
+:: ==============================================================::
+:dlisomenu
+cls
+ECHO.
+ECHO.
+ECHO.    Download Win8.1 ISO Maker       [1]
+ECHO.
+ECHO.    Returning to Main Menu...
+ping -n 3 127.0.0.1 >nul
+GOTO:mainmenu
+:: bitsadmin.exe /transfer "JobName" http://download.url/here.exe C:\destination\here.exe
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+http://web.esd.microsoft.com/W81GA/81GF9D695DA9DF8D56B2BC5B7356B5DA9D89D29D69/WindowsSetupBox.exe
 :: ==============================================================::
 :baiz
+cls
 ECHO.
 ECHO.
 ECHO.
