@@ -20,10 +20,62 @@
 :: ==============================================================::
 REM Version number
 if "%VERSION%" == "" (
-    set VERSION=0.1.0
+    set VERSION=0.1.1-2
 )
-REM Set color to Terminal
-COLOR 0A
+REM Set color to Notice
+COLOR 04
+:: ==============================================================::
+IF exist %USERPROFILE%\download.vbs (
+	GOTO:mainmenu
+) ELSE (
+	ECHO.
+	ECHO.
+	ECHO.    Making preparations.
+	ping -n 2 127.0.0.1 >nul
+	cls
+	ECHO.
+	ECHO.
+	ECHO.    Making preparations..
+	ping -n 2 127.0.0.1 >nul
+	cls
+	ECHO.
+	ECHO.
+	ECHO.    Making preparations...
+	ping -n 2 127.0.0.1 >nul
+	cls
+	echo Option Explicit                                                    >  %USERPROFILE%\download.vbs
+	echo Dim args, http, fileSystem, adoStream, url, target, status         >> %USERPROFILE%\download.vbs
+	echo.                                                                   >> %USERPROFILE%\download.vbs
+	echo Set args = Wscript.Arguments                                       >> %USERPROFILE%\download.vbs
+	echo Set http = CreateObject("WinHttp.WinHttpRequest.5.1")              >> %USERPROFILE%\download.vbs
+	echo url = args(0)                                                      >> %USERPROFILE%\download.vbs
+	echo target = args(1)                                                   >> %USERPROFILE%\download.vbs
+	echo WScript.Echo "Getting '" ^& target ^& "' from '" ^& url ^& "'..."  >> %USERPROFILE%\download.vbs
+	echo.                                                                   >> %USERPROFILE%\download.vbs
+	echo http.Open "GET", url, False                                        >> %USERPROFILE%\download.vbs
+	echo http.Send                                                          >> %USERPROFILE%\download.vbs
+	echo status = http.Status                                               >> %USERPROFILE%\download.vbs
+	echo.                                                                   >> %USERPROFILE%\download.vbs
+	echo If status ^<^> 200 Then                                            >> %USERPROFILE%\download.vbs
+	echo    WScript.Echo "FAILED to download: HTTP Status " ^& status       >> %USERPROFILE%\download.vbs
+	echo    WScript.Quit 1                                                  >> %USERPROFILE%\download.vbs
+	echo End If                                                             >> %USERPROFILE%\download.vbs
+	echo.                                                                   >> %USERPROFILE%\download.vbs
+	echo Set adoStream = CreateObject("ADODB.Stream")                       >> %USERPROFILE%\download.vbs
+	echo adoStream.Open                                                     >> %USERPROFILE%\download.vbs
+	echo adoStream.Type = 1                                                 >> %USERPROFILE%\download.vbs
+	echo adoStream.Write http.ResponseBody                                  >> %USERPROFILE%\download.vbs
+	echo adoStream.Position = 0                                             >> %USERPROFILE%\download.vbs
+	echo.                                                                   >> %USERPROFILE%\download.vbs
+	echo Set fileSystem = CreateObject("Scripting.FileSystemObject")        >> %USERPROFILE%\download.vbs
+	echo If fileSystem.FileExists(target) Then fileSystem.DeleteFile target >> %USERPROFILE%\download.vbs
+	echo adoStream.SaveToFile target                                        >> %USERPROFILE%\download.vbs
+	echo adoStream.Close                                                    >> %USERPROFILE%\download.vbs
+	echo.                                                                   >> %USERPROFILE%\download.vbs
+	REM Set color to Terminal
+	COLOR 0A
+	GOTO:mainmenu
+)
 :: ==============================================================::
 :mainmenu
 cls
@@ -37,12 +89,12 @@ ECHO.
 ECHO.
 ECHO.     [OPTIONS]
 ECHO.
-ECHO.       Download Req Files    [1]
+ECHO.       Auto Windows Updates     [1]
 ECHO.
-ECHO.       Download 8.1 ISO      [2]
+ECHO.       Download 8.1 ISO         [2]
 ECHO.
 ECHO.
-ECHO.       exit                  [X]
+ECHO.       Exit                     [X]
 ECHO.
 set /p choice=Enter selection:
 IF %choice% EQU 1 (
@@ -88,77 +140,11 @@ ECHO.   ******************************************
 ECHO.
 set /p runbot=Enter selection:
 IF %runbot% EQU 1 (
-	rem Windows has no built-in wget or curl, so generate a VBS script to do it:
-	rem -------------------------------------------------------------------------
-	set DLOAD_SCRIPT=download.vbs
-	echo Option Explicit                                                    >  %DLOAD_SCRIPT%
-	echo Dim args, http, fileSystem, adoStream, url, target, status         >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo Set args = Wscript.Arguments                                       >> %DLOAD_SCRIPT%
-	echo Set http = CreateObject("WinHttp.WinHttpRequest.5.1")              >> %DLOAD_SCRIPT%
-	echo url = args(0)                                                      >> %DLOAD_SCRIPT%
-	echo target = args(1)                                                   >> %DLOAD_SCRIPT%
-	echo WScript.Echo "Getting '" ^& target ^& "' from '" ^& url ^& "'..."  >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo http.Open "GET", url, False                                        >> %DLOAD_SCRIPT%
-	echo http.Send                                                          >> %DLOAD_SCRIPT%
-	echo status = http.Status                                               >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo If status ^<^> 200 Then                                            >> %DLOAD_SCRIPT%
-	echo    WScript.Echo "FAILED to download: HTTP Status " ^& status       >> %DLOAD_SCRIPT%
-	echo    WScript.Quit 1                                                  >> %DLOAD_SCRIPT%
-	echo End If                                                             >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo Set adoStream = CreateObject("ADODB.Stream")                       >> %DLOAD_SCRIPT%
-	echo adoStream.Open                                                     >> %DLOAD_SCRIPT%
-	echo adoStream.Type = 1                                                 >> %DLOAD_SCRIPT%
-	echo adoStream.Write http.ResponseBody                                  >> %DLOAD_SCRIPT%
-	echo adoStream.Position = 0                                             >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo Set fileSystem = CreateObject("Scripting.FileSystemObject")        >> %DLOAD_SCRIPT%
-	echo If fileSystem.FileExists(target) Then fileSystem.DeleteFile target >> %DLOAD_SCRIPT%
-	echo adoStream.SaveToFile target                                        >> %DLOAD_SCRIPT%
-	echo adoStream.Close                                                    >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	rem -------------------------------------------------------------------------
-	cscript //Nologo %DLOAD_SCRIPT% http://download.microsoft.com/download/6/7/B/67BB1487-B67A-4B3C-BF49-140AB1CF7B5F/Windows8-RT-KB2871389-x64.msu %USERPROFILE%\Windows8-RT-KB2871389-x64.msu
+	cscript //Nologo %USERPROFILE%\download.vbs http://download.microsoft.com/download/6/7/B/67BB1487-B67A-4B3C-BF49-140AB1CF7B5F/Windows8-RT-KB2871389-x64.msu %USERPROFILE%\Windows8-RT-KB2871389-x64.msu
 	GOTO:x64inst
 )
 IF %runbot% EQU 2 (
-	rem Windows has no built-in wget or curl, so generate a VBS script to do it:
-	rem -------------------------------------------------------------------------
-	set DLOAD_SCRIPT=download.vbs
-	echo Option Explicit                                                    >  %DLOAD_SCRIPT%
-	echo Dim args, http, fileSystem, adoStream, url, target, status         >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo Set args = Wscript.Arguments                                       >> %DLOAD_SCRIPT%
-	echo Set http = CreateObject("WinHttp.WinHttpRequest.5.1")              >> %DLOAD_SCRIPT%
-	echo url = args(0)                                                      >> %DLOAD_SCRIPT%
-	echo target = args(1)                                                   >> %DLOAD_SCRIPT%
-	echo WScript.Echo "Getting '" ^& target ^& "' from '" ^& url ^& "'..."  >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo http.Open "GET", url, False                                        >> %DLOAD_SCRIPT%
-	echo http.Send                                                          >> %DLOAD_SCRIPT%
-	echo status = http.Status                                               >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo If status ^<^> 200 Then                                            >> %DLOAD_SCRIPT%
-	echo    WScript.Echo "FAILED to download: HTTP Status " ^& status       >> %DLOAD_SCRIPT%
-	echo    WScript.Quit 1                                                  >> %DLOAD_SCRIPT%
-	echo End If                                                             >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo Set adoStream = CreateObject("ADODB.Stream")                       >> %DLOAD_SCRIPT%
-	echo adoStream.Open                                                     >> %DLOAD_SCRIPT%
-	echo adoStream.Type = 1                                                 >> %DLOAD_SCRIPT%
-	echo adoStream.Write http.ResponseBody                                  >> %DLOAD_SCRIPT%
-	echo adoStream.Position = 0                                             >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	echo Set fileSystem = CreateObject("Scripting.FileSystemObject")        >> %DLOAD_SCRIPT%
-	echo If fileSystem.FileExists(target) Then fileSystem.DeleteFile target >> %DLOAD_SCRIPT%
-	echo adoStream.SaveToFile target                                        >> %DLOAD_SCRIPT%
-	echo adoStream.Close                                                    >> %DLOAD_SCRIPT%
-	echo.                                                                   >> %DLOAD_SCRIPT%
-	rem -------------------------------------------------------------------------
-	cscript //Nologo %DLOAD_SCRIPT% http://download.microsoft.com/download/0/C/6/0C67F34D-1F09-429D-B55E-794177982162/Windows8-RT-KB2871389-x86.msu %USERPROFILE%\Windows8-RT-KB2871389-x86.msu
+	cscript //Nologo %USERPROFILE%\download.vbs http://download.microsoft.com/download/0/C/6/0C67F34D-1F09-429D-B55E-794177982162/Windows8-RT-KB2871389-x86.msu %USERPROFILE%\Windows8-RT-KB2871389-x86.msu
 	GOTO:x86inst
 )
 IF %runbot% EQU 0 (
@@ -237,7 +223,7 @@ ECHO.     Return to menu                  [0]
 ECHO.
 set /p catman=Enter choice:
 IF %catman% EQU 1 (
-	bitsadmin.exe /transfer "dlIsoMaker" http://web.esd.microsoft.com/W81GA/81GF9D695DA9DF8D56B2BC5B7356B5DA9D89D29D69/WindowsSetupBox.exe %USERPROFILE%\WindowsSetupBox.exe
+	cscript //Nologo %USERPROFILE%\download.vbs  http://web.esd.microsoft.com/W81GA/81GF9D695DA9DF8D56B2BC5B7356B5DA9D89D29D69/WindowsSetupBox.exe %USERPROFILE%\WindowsSetupBox.exe
 	GOTO:isomake
 )
 IF %catman% EQU 0 (
